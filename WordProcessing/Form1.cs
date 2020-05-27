@@ -8,13 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Configuration;
 
 namespace WordProcessing
 {
     public partial class Form1 : Form
     {
+        char[] punctuationMarks = ConfigurationManager.AppSettings["punctuationMarks"].ToCharArray();
         OpenFileDialog ofd = new OpenFileDialog();
-        Stream fileStream;
+        StreamReader fileStream;
 
         public Form1()
         {
@@ -32,19 +34,29 @@ namespace WordProcessing
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 pathSourceFile.Text = ofd.FileName;
-                fileStream = ofd.OpenFile();
-                labelFilePreparation.Visible = false;
-                labelDownloaded.Visible = true;
+                try
+                {
+                    if ((fileStream = new StreamReader(ofd.FileName)) != null)
+                    {
+                        labelFilePreparation.Visible = false;
+                        labelDownloaded.Visible = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
             }
-
         }
 
         private void buttonReadWord_Click(object sender, EventArgs e)
         {
-            byte[] tmp = new byte[30];
-            fileStream.Read(tmp,0,20);
-            label2.Text = System.Text.Encoding.Default.GetString(tmp);
-            label2.Visible = true;
+            string textLine;
+            while ((textLine = fileStream.ReadLine()) != null)
+            {
+                int a = 5;
+            }
+
         }
     }
 }
